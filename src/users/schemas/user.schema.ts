@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({ timestamps: true }) //tu dong them createdAt va updatedAt vao mongodb
 export class User {
   @Prop({ required: true })
   email: string;

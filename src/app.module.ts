@@ -1,3 +1,4 @@
+import { softDeletePlugin } from '../node_modules/soft-delete-plugin-mongoose/dist/src/soft-delete-plugin';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,6 +16,10 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
       imports: [ConfigModule],
       useFactory: (ConfigService: ConfigService) => ({
         uri: ConfigService.get<string>('MongoDB_URI'),
+        connectionFactory: (connection) => {
+          connection.plugin(softDeletePlugin);
+          return connection;
+        },
       }),
       inject: [ConfigService],
     }),
