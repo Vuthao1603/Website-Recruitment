@@ -15,6 +15,13 @@ async function bootstrap() {
   app.setViewEngine('ejs'); //su dung ejs thay vi hlb (mac dinh cua nestjs la hbs)
 
   app.useGlobalPipes(new ValidationPipe()); //su dung class-validator o muc toan cuc
+  //config cors
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
 
   await app.listen(String(configService.get<string>('PORT')));
 }
