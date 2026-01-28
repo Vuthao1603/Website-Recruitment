@@ -6,7 +6,7 @@ import { Company, CompanyDocument } from './schemas/company.schema';
 import type { SoftDeleteModel } from './../../node_modules/soft-delete-plugin-mongoose/dist/src/soft-delete-model.d';
 import { IUser } from 'src/users/users.interface';
 import { Types } from 'mongoose';
-
+import mongoose from 'mongoose';
 @Injectable()
 export class CompaniesService {
   constructor(
@@ -30,17 +30,27 @@ export class CompaniesService {
     return `This action returns a #${id} company`;
   }
 
-  async update(id: string, UpdateCompanyDto, user: IUser) {
-    return this.companyModel.updateOne(
+  async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+    return await this.companyModel.updateOne(
       { _id: id },
       {
-        ...UpdateCompanyDto,
+        ...updateCompanyDto,
         updatedBy: { _id: user._id, email: user.email },
       },
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string, user: IUser) {
+    // if (!mongoose.Types.ObjectId.isValid(id)) {
+    //   return `not found company`;
+    // }
+
+    await this.companyModel.updateOne(
+      { _id: id },
+      {
+        deletedBy: { _id: user._id, email: user.email },
+      },
+    );
+    return this.companyModel.softDelete({ _id: id });
   }
 }

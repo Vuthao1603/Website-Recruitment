@@ -14,6 +14,27 @@ export class Company {
   @Prop()
   description: string;
 
+  @Prop({
+    type: {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      email: { type: String },
+    },
+  })
+  updatedBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    email: string;
+  };
+  @Prop({
+    type: {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      email: { type: String },
+    },
+  })
+  deletedBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    email: string;
+  };
+
   @Prop()
   createAt: Date;
   @Prop()
