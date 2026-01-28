@@ -8,6 +8,7 @@ import { IUser } from 'src/users/users.interface';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private ConfigService: ConfigService) {
     super({
+      //decode token
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: ConfigService.getOrThrow<string>('JWT_ACCESS_TOKEN'),
