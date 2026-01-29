@@ -14,14 +14,13 @@ async function bootstrap() {
 
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector)); //them guard toan cuc
+  app.useGlobalInterceptors(new TransformInterceptor(reflector)); //su dung interceptor toan cuc
 
   app.useStaticAssets(join(__dirname, '..', 'public')); //js, css, img
   app.setBaseViewsDir(join(__dirname, '..', 'views')); //views
   app.setViewEngine('ejs'); //su dung ejs thay vi hlb (mac dinh cua nestjs la hbs)
 
   app.useGlobalPipes(new ValidationPipe()); //su dung class-validator o muc toan cuc
-
-  app.useGlobalInterceptors(new TransformInterceptor());
 
   //config cors
   app.enableCors({

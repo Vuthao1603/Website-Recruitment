@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  Response,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { User } from 'src/decorator/customize';
 import type { IUser } from 'src/users/users.interface';
+import { ResponseMessage } from 'src/decorator/customize';
 
 @Controller('companies')
 export class CompaniesController {
@@ -24,6 +26,7 @@ export class CompaniesController {
   }
 
   @Get()
+  @ResponseMessage('fetch list companies successfully')
   findAll(
     @Query('page') currentPage: string,
     @Query('limit') limit: string,
