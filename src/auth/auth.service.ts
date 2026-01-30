@@ -1,19 +1,16 @@
-import { register } from 'module';
-import { User } from 'src/decorator/customize';
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
-import e from 'express';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/users.interface';
-import { genSaltSync, hashSync } from 'bcrypt';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
-import { create } from 'domain';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -41,13 +38,19 @@ export class AuthService {
       email,
       role,
     };
+
+    const refresh_token = this.createRefreshToken(payload);
+
     return {
       //tao token
       access_token: this.jwtService.sign(payload),
-      _id,
-      name,
-      email,
-      role,
+      refresh_token,
+      user: {
+        _id,
+        name,
+        email,
+        role,
+      },
     };
   }
 
@@ -58,4 +61,13 @@ export class AuthService {
       createdAt: newUser?.createAt,
     };
   }
+
+  createRefreshToken = (payload: any) => {
+    //tao token
+    const refresh_token = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPRIES'),
+    });
+    return refresh_token;
+  };
 }

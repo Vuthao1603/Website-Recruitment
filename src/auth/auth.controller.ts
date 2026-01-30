@@ -18,6 +18,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Public() // Cho phep truy cap khong jwt
+  @ResponseMessage('User login')
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   handleLogin(@Request() req) {
