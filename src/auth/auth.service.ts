@@ -4,6 +4,8 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/users.interface';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
+import type { Response } from 'express';
+import ms, { StringValue } from 'ms';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +30,7 @@ export class AuthService {
     }
   }
 
-  async login(user: IUser) {
+  async login(user: IUser, response: Response) {
     const { _id, name, email, role } = user;
     const payload = {
       sub: 'token login',
@@ -40,6 +42,17 @@ export class AuthService {
     };
 
     const refresh_token = this.createRefreshToken(payload);
+
+    //update user with refresh token(phia db)
+    await this.usersService.updateUserToken(refresh_token, _id);
+
+    //set refresh_token as cookies
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      maxAge: ms(
+        this.configService.getOrThrow('JWT_REFRESH_EXPRIES') as StringValue,
+      ),
+    });
 
     return {
       //tao token
