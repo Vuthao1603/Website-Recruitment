@@ -4,7 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/users.interface';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
-import type { Response } from 'express';
+import { response, type Response } from 'express';
 import ms, { StringValue } from 'ms';
 
 @Injectable()
@@ -140,5 +140,11 @@ export class AuthService {
         'Refresh token khong hop le, Vui long dang nhap lai',
       );
     }
+  };
+
+  logout = async (response: Response, user: IUser) => {
+    await this.usersService.updateUserToken('', user._id);
+    response.clearCookie('refresh_token');
+    return 'ok';
   };
 }
