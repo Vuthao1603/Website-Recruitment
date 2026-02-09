@@ -24,7 +24,7 @@ export class Job {
   salary: number;
 
   @Prop()
-  qauntiny: number;
+  quantity: number;
 
   @Prop()
   level: string;
@@ -37,8 +37,27 @@ export class Job {
 
   @Prop()
   endDate: Date;
+
   @Prop()
   isActive: boolean;
+
+  @Prop({ type: Object })
+  createdBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    email: string;
+  };
+
+  @Prop({ type: Object })
+  updatedBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    email: string;
+  };
+
+  @Prop({ type: Object })
+  deletedBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    email: string;
+  };
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);
