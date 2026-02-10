@@ -6,6 +6,7 @@ import { Job, JobDocument } from './schemas/job.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import type { SoftDeleteModel } from 'soft-delete-plugin-mongoose/dist/src/soft-delete-model';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class JobsService {
@@ -51,8 +52,11 @@ export class JobsService {
     };
   }
 
-  findOne(id: string) {
-    return this.jobModel.findOne({ _id: id });
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'not found job';
+    }
+    return await this.jobModel.findOne({ _id: id });
   }
 
   async update(id: string, updateJobDto: UpdateJobDto, user: IUser) {
