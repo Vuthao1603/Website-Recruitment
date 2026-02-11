@@ -12,7 +12,7 @@ import {
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { ResponseMessage, User, Public } from 'src/decorator/customize';
 import type { IUser } from 'src/users/users.interface';
 
 @Controller('jobs')
@@ -26,6 +26,7 @@ export class JobsController {
   }
 
   @Get()
+  @Public()
   @ResponseMessage('fetch list jobs successfully')
   findAll(
     @Query('current') currentPage: string,
@@ -36,6 +37,7 @@ export class JobsController {
   }
 
   @Get(':id')
+  @Public()
   @ResponseMessage('fetch job by id')
   findOne(@Param('id') id: string) {
     return this.jobsService.findOne(id);

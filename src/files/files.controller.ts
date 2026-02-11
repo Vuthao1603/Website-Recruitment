@@ -23,14 +23,14 @@ export class FilesController {
 
   @Post('upload')
   @ResponseMessage('uploaded single file successfully')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('fileUpload'))
   uploadFile(
     @UploadedFile(
       new ParseFilePipeBuilder()
         //check file type, nó vẫn upload được nhưng nó báo lỗi 422 trên postman!
         .addFileTypeValidator({
           fileType:
-            /^(jpg|jpeg|png|image\/png|gif|txt|pdf|application\/pdf|doc|docx|text\/plain)$/i,
+            /^(jpg|jpeg|image\/jpeg|png|image\/png|gif|txt|pdf|application\/pdf|doc|docx|text\/plain)$/i,
         })
 
         .addMaxSizeValidator({

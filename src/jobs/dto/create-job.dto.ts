@@ -33,6 +33,9 @@ export class CreateJobDto {
   @IsNotEmpty({ message: 'Mo ta khong duoc de trong' })
   description: string;
 
+  // @IsNotEmpty({ message: 'Logo khong duoc de trong' })
+  // logo: string;
+
   @IsNotEmpty({ message: 'Ngay bat dau khong duoc de trong' })
   @Transform(({ value }) => new Date(value))
   @IsDate({ message: 'startDate co dinh dang Date' })

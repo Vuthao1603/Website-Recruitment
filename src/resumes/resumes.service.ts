@@ -1,0 +1,113 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { CreateResumeDto, CreateUserCvDto } from './dto/create-resume.dto';
+import { UpdateResumeDto } from './dto/update-resume.dto';
+import { IUser } from 'src/users/users.interface';
+import { Resume, ResumeDocument } from './schema/resume.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import type { SoftDeleteModel } from 'soft-delete-plugin-mongoose/dist/src/soft-delete-model';
+import e from 'express';
+import aqp from 'api-query-params';
+import mongoose from 'mongoose';
+
+@Injectable()
+export class ResumesService {
+  constructor(
+    //dependency injection
+    @InjectModel(Resume.name)
+    private resumeModel: SoftDeleteModel<ResumeDocument>,
+  ) {}
+
+  async create(createUserCvDto: CreateUserCvDto, user: IUser) {
+    //lay thong tin tu req.user hay body truyen len
+    const { url, companyId, jobId } = createUserCvDto;
+    const { email, _id } = user;
+
+    const newCV = await this.resumeModel.create({
+      url,
+      companyId,
+      jobId,
+      email,
+      userId: _id, //lay tu req.user thong qua JWT
+      status: 'PENDING',
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
+      history: [
+        {
+          status: 'PENDING',
+          updateAt: new Date(),
+          updateBy: { _id: user._id, email: user.email },
+        },
+      ],
+    });
+
+    return {
+      _id: newCV._id,
+      createdAt: newCV?.createdAt,
+    };
+  }
+
+  async findAll(currentPage: number, limit: number, qs: string) {
+    const { filter, sort, projection, population } = aqp(qs);
+    delete filter.current;
+    delete filter.pageSize;
+
+    let offset = (+currentPage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 10;
+    const totalItems = (await this.resumeModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.resumeModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .populate(population)
+      .exec();
+
+    return {
+      meta: {
+        current: currentPage, //trang hiện tại
+        pageSize: limit, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems, // tổng số phần tử (số bản ghi)
+      },
+      result, //kết quả query
+    };
+  }
+
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'not found resume';
+    }
+    return await this.resumeModel.findById(id);
+  }
+
+  async update(_id: string, updateResumeDto: UpdateResumeDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      return 'not found resume';
+    }
+    return await this.resumeModel.updateOne(
+      { _id },
+      { updatedBy: { _id: user._id, email: user.email } },
+    );
+  }
+
+  async remove(id: string, user: IUser) {
+    return this.resumeModel.softDelete({
+      _id: id,
+    });
+  }
+
+  async updateStatus(id: string, status: string, user: IUser) {
+    return await this.resumeModel.updateOne(
+      { _id: id }, //key, time id tu params
+      { status, updatedBy: { _id: user._id, email: user.email } }, //update them status va updateBy
+    );
+  }
+
+  async findByUser(user: IUser) {
+    return await this.resumeModel.find({ userId: user._id });
+  }
+}
