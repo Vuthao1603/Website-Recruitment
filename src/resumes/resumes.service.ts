@@ -64,6 +64,7 @@ export class ResumesService {
       .limit(defaultLimit)
       .sort(sort as any)
       .populate(population)
+      .select(projection as any)
       .exec();
 
     return {
@@ -95,6 +96,10 @@ export class ResumesService {
   }
 
   async remove(id: string, user: IUser) {
+    await this.resumeModel.updateOne({
+      _id: id,
+      updatedBy: { _id: user._id, email: user.email },
+    });
     return this.resumeModel.softDelete({
       _id: id,
     });

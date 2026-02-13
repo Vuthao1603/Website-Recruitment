@@ -12,6 +12,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { JobsModule } from './jobs/jobs.module';
 import { FilesModule } from './files/files.module';
 import { ResumesModule } from './resumes/resumes.module';
+import { SubscribersModule } from './subscribers/subscribers.module';
 
 @Module({
   imports: [
@@ -43,6 +44,8 @@ import { ResumesModule } from './resumes/resumes.module';
     FilesModule,
 
     ResumesModule,
+
+    SubscribersModule,
   ],
   controllers: [AppController],
   providers: [
