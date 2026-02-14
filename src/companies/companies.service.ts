@@ -71,10 +71,6 @@ export class CompaniesService {
   }
 
   async remove(id: string, user: IUser) {
-    // if (!mongoose.Types.ObjectId.isValid(id)) {
-    //   return `not found company`;
-    // }
-
     await this.companyModel.updateOne(
       { _id: id },
       {
