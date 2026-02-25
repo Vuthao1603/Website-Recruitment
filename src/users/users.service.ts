@@ -1,3 +1,4 @@
+import { Permission } from 'src/permissions/schemas/permission.schema';
 import { Company } from './../companies/schemas/company.schema';
 import type { SoftDeleteModel } from './../../node_modules/soft-delete-plugin-mongoose/dist/src/soft-delete-model.d';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -107,14 +108,19 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return `not found user`;
     }
-    return await this.userModel.findOne({ _id: id }).select('-password'); //khong tra ve password
+    return await this.userModel
+      .findOne({ _id: id })
+      .select('-password') //khong tra ve password
+      .populate({ path: 'role', select: { name: 1, _id: 1 } });
   }
 
   findOneByUsername(username: string) {
     // if (!mongoose.Types.ObjectId.isValid(username)) {
     //   return `not found user`;
     // }
-    return this.userModel.findOne({ email: username });
+    return this.userModel
+      .findOne({ email: username })
+      .populate({ path: 'role', select: { name: 1, permission: 1 } });
   }
 
   isValidUserPassword(password: string, hash: string) {
@@ -138,6 +144,12 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return `not found user`;
     }
+
+    const foundUser = await this.userModel.findById(id);
+    if (foundUser?.email === 'vuvanthao1603@gmail.com') {
+      throw new BadRequestException('Khong the xoa tai khoan admin');
+    }
+
     await this.userModel.updateOne(
       { _id: id },
       {

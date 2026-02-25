@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
   IsObject,
@@ -37,7 +38,8 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Giới tính không được để trống' })
   gender: string;
 
-  @IsNotEmpty({ message: 'Vai trò không được để trống' })
+  @IsNotEmpty({ message: 'Role không được để trống' })
+  @IsMongoId({ message: 'Role co dainh dang la mongoid' })
   role: string;
 
   //vi company la object nen can validate nested

@@ -27,7 +27,7 @@ export class PermissionsService {
     });
     if (checkPermisson) {
       throw new BadRequestException(
-        "Permisson voi apiPath '${apiPath}' va method ${method} da ton tai ",
+        `Permisson voi apiPath ${apiPath} va method ${method} da ton tai`,
       );
     }
 
