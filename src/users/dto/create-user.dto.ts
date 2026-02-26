@@ -40,7 +40,7 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'Role không được để trống' })
   @IsMongoId({ message: 'Role co dainh dang la mongoid' })
-  role: string;
+  role: mongoose.Schema.Types.ObjectId;
 
   //vi company la object nen can validate nested
   @IsNotEmptyObject()
