@@ -15,10 +15,14 @@ import { register } from 'module';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import type { Response, Request } from 'express';
 import type { IUser } from 'src/users/users.interface';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private roleService: RolesService,
+  ) {}
 
   @Public() // Cho phep truy cap khong jwt
   @ResponseMessage('User login')
@@ -37,7 +41,9 @@ export class AuthController {
 
   @ResponseMessage('Get account info')
   @Get('/account')
-  hanldeGetAccount(@User() user: IUser) {
+  async hanldeGetAccount(@User() user: IUser) {
+    const temp = (await this.roleService.findOne(user.role._id)) as any;
+    user.permission = temp.permissions;
     return { user };
   }
 

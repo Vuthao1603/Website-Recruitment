@@ -6,6 +6,8 @@ import { IUser } from 'src/users/users.interface';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { response, type Response } from 'express';
 import ms, { StringValue } from 'ms';
+import { RolesService } from 'src/roles/roles.service';
+import { permission } from 'process';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private roleService: RolesService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -23,7 +26,14 @@ export class AuthService {
         user.password,
       );
       if (isValid === true) {
-        return user;
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.roleService.findOne(userRole._id);
+
+        const objUser = {
+          ...user.toObject(),
+          permission: temp?.permissions ?? [],
+        };
+        return objUser;
       }
     } else {
       return null;
@@ -31,7 +41,7 @@ export class AuthService {
   }
 
   async login(user: IUser, response: Response) {
-    const { _id, name, email, role } = user;
+    const { _id, name, email, role, permission } = user;
     const payload = {
       sub: 'token login',
       iss: 'from server',
@@ -63,6 +73,7 @@ export class AuthService {
         name,
         email,
         role,
+        permission,
       },
     };
   }
@@ -109,6 +120,10 @@ export class AuthService {
         //update user with refresh token(phia db)
         await this.usersService.updateUserToken(refresh_token, _id.toString());
 
+        //fetch user role
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.roleService.findOne(userRole._id);
+
         //set refresh_token as cookies
         response.clearCookie('refresh_token');
 
@@ -128,6 +143,7 @@ export class AuthService {
             name,
             email,
             role,
+            permission: temp?.permissions ?? [],
           },
         };
       } else {

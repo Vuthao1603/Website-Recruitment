@@ -63,7 +63,7 @@ export class DatabasesService implements OnModuleInit {
         await this.userModel.insertMany([
           {
             name: 'Toi la Admin',
-            email: 'admin@gamil.com',
+            email: 'admin@gmail.com',
             password: this.usersService.gethashPasswprd(
               this.configService.getOrThrow<string>('INIT_PASSWORD'),
             ),
@@ -74,7 +74,7 @@ export class DatabasesService implements OnModuleInit {
           },
           {
             name: 'Toi la User',
-            email: 'user@gamil.com',
+            email: 'user@gmail.com',
             password: this.usersService.gethashPasswprd(
               this.configService.getOrThrow<string>('INIT_PASSWORD'),
             ),

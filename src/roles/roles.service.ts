@@ -7,6 +7,7 @@ import { Role, RoleDocument } from './schemas/role.schema';
 import type { SoftDeleteModel } from 'soft-delete-plugin-mongoose/dist/src/soft-delete-model';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
+import { ADMIN_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class RolesService {
@@ -51,7 +52,7 @@ export class RolesService {
     };
   }
 
-  async findOne(id: string, user: IUser) {
+  async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('not found role');
     }
@@ -79,7 +80,7 @@ export class RolesService {
   async remove(id: string, user: IUser) {
     const foundRole = await this.roleModel.findById(id);
 
-    if (foundRole?.name === 'ADMIN') {
+    if (foundRole?.name === ADMIN_ROLE) {
       throw new BadRequestException('Khong the xoa role ADMIN');
     }
     await this.roleModel.updateOne(
