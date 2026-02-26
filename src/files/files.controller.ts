@@ -27,11 +27,7 @@ export class FilesController {
   uploadFile(
     @UploadedFile(
       new ParseFilePipeBuilder()
-        //check file type, nó vẫn upload được nhưng nó báo lỗi 422 trên postman!
-        .addFileTypeValidator({
-          fileType:
-            /^(jpg|jpeg|image\/jpeg|png|image\/png|gif|txt|pdf|application\/pdf|doc|docx|text\/plain)$/i,
-        })
+        //bo check type vi no se loi
 
         .addMaxSizeValidator({
           maxSize: 1024 * 1024 * 5, // 5MB
@@ -42,7 +38,7 @@ export class FilesController {
     )
     file: Express.Multer.File,
   ) {
-    return { filename: file.filename };
+    return { filename: file.filename, fileName: file.filename };
   }
 
   @Get()
