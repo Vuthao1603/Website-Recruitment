@@ -85,13 +85,23 @@ export class ResumesService {
     return await this.resumeModel.findById(id);
   }
 
-  async update(_id: string, updateResumeDto: UpdateResumeDto, user: IUser) {
+  async updateStatus(_id: string, status: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
       return 'not found resume';
     }
     return await this.resumeModel.updateOne(
       { _id },
-      { updatedBy: { _id: user._id, email: user.email } },
+      {
+        status,
+        updatedBy: { _id: user._id, email: user.email },
+        $push: {
+          history: {
+            status: status,
+            updateAt: new Date(),
+            updateBy: { _id: user._id, email: user.email },
+          },
+        },
+      },
     );
   }
 
@@ -103,13 +113,6 @@ export class ResumesService {
     return this.resumeModel.softDelete({
       _id: id,
     });
-  }
-
-  async updateStatus(id: string, status: string, user: IUser) {
-    return await this.resumeModel.updateOne(
-      { _id: id }, //key, time id tu params
-      { status, updatedBy: { _id: user._id, email: user.email } }, //update them status va updateBy
-    );
   }
 
   async findByUser(user: IUser) {

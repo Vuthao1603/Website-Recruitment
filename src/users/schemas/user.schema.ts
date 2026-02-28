@@ -32,7 +32,7 @@ export class User {
 
   @Prop({ type: Object })
   company: {
-    __id: mongoose.Schema.Types.ObjectId;
+    _id: mongoose.Schema.Types.ObjectId;
     name: string;
   };
 

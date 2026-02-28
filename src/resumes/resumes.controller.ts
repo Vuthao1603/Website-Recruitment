@@ -41,21 +41,6 @@ export class ResumesController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateResumeDto: UpdateResumeDto,
-    @User() user: IUser,
-  ) {
-    return this.resumesService.update(id, updateResumeDto, user);
-  }
-
-  @Delete(':id')
-  @ResponseMessage('Delete resume successfully')
-  remove(@Param('id') id: string, @User() user: IUser) {
-    return this.resumesService.remove(id, user);
-  }
-
-  @Patch(':id/status')
   @ResponseMessage('Update resume status')
   updateStatus(
     @Param('id') id: string,
@@ -63,6 +48,12 @@ export class ResumesController {
     @User() user: IUser,
   ) {
     return this.resumesService.updateStatus(id, status, user);
+  }
+
+  @Delete(':id')
+  @ResponseMessage('Delete resume successfully')
+  remove(@Param('id') id: string, @User() user: IUser) {
+    return this.resumesService.remove(id, user);
   }
 
   @Post('by-user')
