@@ -48,14 +48,21 @@ export class ResumesService {
     };
   }
 
-  async findAll(currentPage: number, limit: number, qs: string) {
+  async findAll(currentPage: number, limit: number, qs: string, user: IUser) {
     const { filter, sort, projection, population } = aqp(qs);
     delete filter.current;
     delete filter.pageSize;
 
+    //  DATA SCOPE CONTROL
+    if (user.role.name === 'HR' && user.company?._id) {
+      filter.companyId = new mongoose.Types.ObjectId(user.company?._id);
+    }
+
     let offset = (+currentPage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 10;
-    const totalItems = (await this.resumeModel.find(filter)).length;
+    // const totalItems = (await this.resumeModel.find(filter)).length;
+    // const totalPages = Math.ceil(totalItems / defaultLimit);
+    const totalItems = await this.resumeModel.countDocuments(filter);
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     const result = await this.resumeModel

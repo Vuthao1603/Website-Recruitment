@@ -12,4 +12,8 @@ export interface IUser {
     apiPath: string;
     module: string;
   }[]; //la 1 array chua cac object ben trong
+  company?: {
+    _id: string;
+    name: string;
+  };
 }

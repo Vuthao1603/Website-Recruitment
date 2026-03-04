@@ -21,7 +21,11 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views')); //views
   app.setViewEngine('ejs'); //su dung ejs thay vi hlb (mac dinh cua nestjs la hbs)
 
-  app.useGlobalPipes(new ValidationPipe()); //su dung class-validator o muc toan cuc
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: false, //loai bo nhung truong khong co trong DTO
+    }),
+  ); //su dung class-validator o muc toan cuc
 
   //config cookie parser
   app.use(cookieParser());

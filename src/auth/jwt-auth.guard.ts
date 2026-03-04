@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from 'src/decorator/customize';
+import { IS_PUBLIC_KEY, IS_PUBLIC_PERMISSION } from 'src/decorator/customize';
 import { Request } from 'express';
 
 @Injectable()
@@ -29,6 +29,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err, user, info, context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
+    const isSkipPermission = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_PERMISSION,
+      [context.getHandler(), context.getClass()],
+    );
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
       throw (
@@ -49,8 +53,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         targetMethod === permission.method &&
         targetEndpoint === permission.apiPath,
     );
-    if (targetEndpoint.startsWith('/api/vi/auth')) isExist = true; //cho phép truy cập vào endpoint auth mà không cần kiểm tra permission
-    if (!isExist) {
+    if (targetEndpoint.startsWith('/api/v1/auth')) isExist = true; //cho phép truy cập vào endpoint auth mà không cần kiểm tra permission
+    if (!isExist && !isSkipPermission) {
       throw new ForbiddenException(
         'Bạn không có quyền truy cập vào endpoint này',
       );

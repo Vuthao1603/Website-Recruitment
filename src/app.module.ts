@@ -17,10 +17,12 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { DatabasesModule } from './databases/databases.module';
 import { MailModule } from './mail/mail.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     // MongooseModule.forRoot('mongodb://localhost:27017/Nutri_Fintnes'),
+    ScheduleModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (ConfigService: ConfigService) => ({

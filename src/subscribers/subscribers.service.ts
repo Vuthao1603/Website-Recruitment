@@ -72,16 +72,9 @@ export class SubscribersService {
     return await this.subscriberModel.findOne({ _id: id });
   }
 
-  async update(
-    id: string,
-    updateSubscriberDto: UpdateSubscriberDto,
-    user: IUser,
-  ) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('not found subscriber');
-    }
+  async update(updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
     const update = await this.subscriberModel.updateOne(
-      { _id: id },
+      { email: user.email },
       {
         ...updateSubscriberDto,
         updatedBy: {
@@ -89,6 +82,7 @@ export class SubscribersService {
           email: user.email,
         },
       },
+      { upsert: true },
     );
     return update;
   }
@@ -98,5 +92,10 @@ export class SubscribersService {
       throw new BadRequestException('not found subscriber');
     }
     return await this.subscriberModel.softDelete({ _id: id });
+  }
+
+  async getSkills(user: IUser) {
+    const { email } = user;
+    return await this.subscriberModel.findOne({ email }, { skills: 1 });
   }
 }

@@ -16,11 +16,38 @@ export class JobsService {
     private jobModel: SoftDeleteModel<JobDocument>,
   ) {}
 
-  create(createJobDto: CreateJobDto, user: IUser) {
-    return this.jobModel.create({
-      ...createJobDto,
-      createdBy: { _id: user._id, email: user.email },
+  async create(createJobDto: CreateJobDto, user: IUser) {
+    const {
+      name,
+      skills,
+      company,
+      salary,
+      quantity,
+      level,
+      description,
+      startDate,
+      endDate,
+      isActive,
+    } = createJobDto;
+    let newJob = await this.jobModel.create({
+      name,
+      skills,
+      company,
+      salary,
+      quantity,
+      level,
+      description,
+      startDate,
+      endDate,
+      isActive,
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
     });
+    return {
+      _id: newJob._id,
+    };
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {
@@ -67,10 +94,10 @@ export class JobsService {
   }
 
   async remove(id: string, user: IUser) {
-    await this.jobModel.updateOne({
-      _id: id,
-      deletedBy: { _id: user._id, email: user.email },
-    });
+    await this.jobModel.updateOne(
+      { _id: id },
+      { deletedBy: { _id: user._id, email: user.email } },
+    );
     return this.jobModel.softDelete({
       _id: id,
     });
