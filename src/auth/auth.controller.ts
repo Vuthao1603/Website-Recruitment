@@ -12,12 +12,14 @@ import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { register } from 'module';
-import { RegisterUserDto } from 'src/users/dto/create-user.dto';
+import { RegisterUserDto, UserLoginDto } from 'src/users/dto/create-user.dto';
 import type { Response, Request } from 'express';
 import type { IUser } from 'src/users/users.interface';
 import { RolesService } from 'src/roles/roles.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -27,6 +29,7 @@ export class AuthController {
 
   @Public() // Cho phep truy cap khong jwt
   @UseGuards(ThrottlerGuard) //rate limiting
+  @ApiBody({ type: UserLoginDto })
   @ResponseMessage('User login')
   @UseGuards(LocalAuthGuard)
   @Post('/login')
