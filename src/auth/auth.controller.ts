@@ -16,6 +16,7 @@ import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import type { Response, Request } from 'express';
 import type { IUser } from 'src/users/users.interface';
 import { RolesService } from 'src/roles/roles.service';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -25,6 +26,7 @@ export class AuthController {
   ) {}
 
   @Public() // Cho phep truy cap khong jwt
+  @UseGuards(ThrottlerGuard) //rate limiting
   @ResponseMessage('User login')
   @UseGuards(LocalAuthGuard)
   @Post('/login')

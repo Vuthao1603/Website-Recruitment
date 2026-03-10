@@ -18,11 +18,22 @@ import { RolesModule } from './roles/roles.module';
 import { DatabasesModule } from './databases/databases.module';
 import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     // MongooseModule.forRoot('mongodb://localhost:27017/Nutri_Fintnes'),
     ScheduleModule.forRoot(),
+
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (ConfigService: ConfigService) => ({
